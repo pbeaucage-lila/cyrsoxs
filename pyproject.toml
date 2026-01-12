@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cyrsoxs-jax"
+version = "0.1.0"
+description = "JAX port of CyRSoXS - Computational Resonant Soft X-ray Scattering"
+readme = "README.md"
+license = "NIST-PD"
+requires-python = ">=3.10"
+authors = [
+    { name = "NIST" },
+]
+keywords = ["scattering", "x-ray", "rsoxs", "jax", "simulation"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: Other/Proprietary License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+dependencies = [
+    "jax>=0.4.20",
+    "jaxlib>=0.4.20",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "h5py>=3.8",
+]
+
+[project.optional-dependencies]
+metal = [
+    "jax-metal>=0.1.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.1.0",
+]
+docs = [
+    "sphinx>=6.0",
+    "sphinx-rtd-theme>=1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/usnistgov/cyrsoxs"
+Documentation = "https://cyrsoxs.readthedocs.io"
+Repository = "https://github.com/usnistgov/cyrsoxs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cyrsoxs_jax"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
