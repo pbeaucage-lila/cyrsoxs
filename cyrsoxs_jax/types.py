@@ -361,3 +361,152 @@ jax.tree_util.register_pytree_node(
     _rotationmatrix_flatten,
     _rotationmatrix_unflatten,
 )
+
+
+@dataclass
+class SimulationConfig:
+    """Configuration for a CyRSoXS simulation.
+
+    Attributes:
+        energies: Array of photon energies in eV.
+        k_vectors: Array of k-vector directions, shape [num_k, 3].
+        start_angle: Start angle for E-field rotation in degrees.
+        end_angle: End angle for E-field rotation in degrees.
+        increment_angle: Angle increment in degrees.
+        phys_size: Physical voxel size in nm.
+        reference_frame: Reference frame for polarization computation.
+        ewalds_interpolation: Interpolation type for Ewald projection.
+        fft_windowing: FFT windowing type.
+        rotation_mask: Whether to use rotation masking.
+    """
+    energies: Array
+    k_vectors: Array
+    start_angle: float = 0.0
+    end_angle: float = 0.0
+    increment_angle: float = 1.0
+    phys_size: float = 1.0
+    reference_frame: ReferenceFrame = ReferenceFrame.LAB
+    ewalds_interpolation: EwaldsInterpolation = EwaldsInterpolation.LINEAR
+    fft_windowing: FFTWindowing = FFTWindowing.NONE
+    rotation_mask: bool = False
+
+    @property
+    def num_angles(self) -> int:
+        """Number of rotation angles."""
+        return int(round((self.end_angle - self.start_angle) / self.increment_angle + 1))
+
+    @property
+    def angles(self) -> Array:
+        """Array of rotation angles in degrees."""
+        return jnp.linspace(self.start_angle, self.end_angle, self.num_angles)
+
+
+@dataclass
+class Morphology:
+    """Complete morphology data for simulation.
+
+    Attributes:
+        voxel_data: VoxelData containing material properties.
+        phys_size: Physical voxel size in nm.
+    """
+    voxel_data: VoxelData
+    phys_size: float
+
+    @property
+    def shape(self) -> tuple[int, int, int]:
+        """Voxel dimensions (Nz, Ny, Nx)."""
+        return self.voxel_data.voxel_dims
+
+    @property
+    def num_materials(self) -> int:
+        """Number of materials."""
+        return self.voxel_data.num_materials
+
+    @property
+    def morphology_type(self) -> MorphologyType:
+        """Type of morphology representation."""
+        return self.voxel_data.morphology_type
+
+
+# Type alias for optical constants at a single energy
+OpticalConstants = tuple[Array, Array]  # (npara, nperp) arrays of shape [num_materials]
+
+
+@dataclass
+class ScatteringResult:
+    """Result of a scattering simulation.
+
+    Attributes:
+        projection: 2D detector image, shape [Ny, Nx].
+        energy: Photon energy in eV.
+        k_vector: K-vector direction used.
+        wavelength: X-ray wavelength in nm.
+    """
+    projection: Array
+    energy: float
+    k_vector: Array
+    wavelength: float
+
+
+def _simulationconfig_flatten(sc: SimulationConfig):
+    children = (sc.energies, sc.k_vectors)
+    aux_data = (
+        sc.start_angle, sc.end_angle, sc.increment_angle, sc.phys_size,
+        sc.reference_frame, sc.ewalds_interpolation, sc.fft_windowing, sc.rotation_mask
+    )
+    return children, aux_data
+
+
+def _simulationconfig_unflatten(aux_data, children):
+    energies, k_vectors = children
+    (start_angle, end_angle, increment_angle, phys_size,
+     reference_frame, ewalds_interpolation, fft_windowing, rotation_mask) = aux_data
+    return SimulationConfig(
+        energies=energies, k_vectors=k_vectors, start_angle=start_angle,
+        end_angle=end_angle, increment_angle=increment_angle, phys_size=phys_size,
+        reference_frame=reference_frame, ewalds_interpolation=ewalds_interpolation,
+        fft_windowing=fft_windowing, rotation_mask=rotation_mask
+    )
+
+
+def _morphology_flatten(m: Morphology):
+    children = (m.voxel_data,)
+    aux_data = (m.phys_size,)
+    return children, aux_data
+
+
+def _morphology_unflatten(aux_data, children):
+    (phys_size,) = aux_data
+    (voxel_data,) = children
+    return Morphology(voxel_data=voxel_data, phys_size=phys_size)
+
+
+def _scatteringresult_flatten(sr: ScatteringResult):
+    children = (sr.projection, sr.k_vector)
+    aux_data = (sr.energy, sr.wavelength)
+    return children, aux_data
+
+
+def _scatteringresult_unflatten(aux_data, children):
+    energy, wavelength = aux_data
+    projection, k_vector = children
+    return ScatteringResult(projection=projection, energy=energy, k_vector=k_vector, wavelength=wavelength)
+
+
+jax.tree_util.register_pytree_node(
+    SimulationConfig,
+    _simulationconfig_flatten,
+    _simulationconfig_unflatten,
+)
+
+jax.tree_util.register_pytree_node(
+    Morphology,
+    _morphology_flatten,
+    _morphology_unflatten,
+)
+
+jax.tree_util.register_pytree_node(
+    ScatteringResult,
+    _scatteringresult_flatten,
+    _scatteringresult_unflatten,
+)

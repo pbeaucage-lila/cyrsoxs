@@ -11,6 +11,9 @@ from cyrsoxs_jax.types import (
     ReferenceFrame,
     EwaldsInterpolation,
     FFTWindowing,
+    SimulationConfig,
+    Morphology,
+    ScatteringResult,
 )
 from cyrsoxs_jax.morphology import (
     MorphologyMetadata,
@@ -30,6 +33,13 @@ from cyrsoxs_jax.materials import (
     compute_dielectric_tensor_from_delta_beta,
     get_refractive_index_at_energy,
 )
+from cyrsoxs_jax.simulate import (
+    simulate,
+    simulate_single_energy,
+    simulate_single_k_vector,
+    simulate_single_angle,
+    energy_to_wavelength,
+)
 from cyrsoxs_jax import rotation
 
 __version__ = "0.1.0"
@@ -46,7 +56,10 @@ __all__ = [
     "ReferenceFrame",
     "EwaldsInterpolation",
     "FFTWindowing",
-    # Morphology
+    "SimulationConfig",
+    "Morphology",
+    "ScatteringResult",
+    # Morphology I/O
     "MorphologyMetadata",
     "read_morphology",
     "read_morphology_metadata",
@@ -62,6 +75,12 @@ __all__ = [
     "compute_dielectric_tensor",
     "compute_dielectric_tensor_from_delta_beta",
     "get_refractive_index_at_energy",
+    # Simulation
+    "simulate",
+    "simulate_single_energy",
+    "simulate_single_k_vector",
+    "simulate_single_angle",
+    "energy_to_wavelength",
     # Rotation
     "rotation",
 ]
