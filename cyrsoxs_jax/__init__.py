@@ -19,6 +19,7 @@ from cyrsoxs_jax.morphology import (
     read_vector_morphology,
     read_euler_morphology,
 )
+from cyrsoxs_jax import rotation
 
 __version__ = "0.1.0"
 
@@ -38,4 +39,5 @@ __all__ = [
     "read_morphology_metadata",
     "read_vector_morphology",
     "read_euler_morphology",
+    "rotation",
 ]
