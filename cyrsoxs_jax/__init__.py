@@ -1,17 +1,17 @@
-"""CyRSoXS-JAX: JAX implementation of CyRSoXS simulation engine."""
+"""CyRSoXS-JAX: JAX port of CyRSoXS for resonant soft X-ray scattering simulation."""
 
-from cyrsoxs_jax.fft import (
-    forward_fft_3d,
-    inverse_fft_3d,
-    fftshift_3d,
-    replace_dc_component,
-    fft_pipeline,
+from cyrsoxs_jax.scatter import (
+    scatter_3d,
+    scatter_3d_batched,
+    compute_q_grid_3d,
+    project_polarization_magnitude_squared,
 )
 
+__version__ = "0.1.0"
+
 __all__ = [
-    "forward_fft_3d",
-    "inverse_fft_3d",
-    "fftshift_3d",
-    "replace_dc_component",
-    "fft_pipeline",
+    "scatter_3d",
+    "scatter_3d_batched",
+    "compute_q_grid_3d",
+    "project_polarization_magnitude_squared",
 ]

@@ -1,1 +1,1 @@
-"""Tests for cyrsoxs_jax."""
+"""Tests for CyRSoXS-JAX."""
